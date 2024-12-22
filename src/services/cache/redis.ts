@@ -1,5 +1,6 @@
 import Redis from "ioredis";
 import env from "../../utils/config";
+import logger, { handleError } from "../../utils/logger";
 
 let redisClient: Redis | null = null;
 
@@ -12,11 +13,11 @@ if (env.CACHE_REQUESTS) {
   });
 
   redisClient.on("connect", () => {
-    console.log("Connected to Redis");
+    logger.info("Connected to Redis");
   });
 
   redisClient.on("error", (err) => {
-    console.error("Redis connection error:", err);
+    handleError(err, "Redis connection error");
   });
 }
 

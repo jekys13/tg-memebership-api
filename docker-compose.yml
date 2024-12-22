@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  tg-membership-api:
+    image: ghcr.io/jekys13/tg-memebership-api:latest
+    restart: unless-stopped
+    ports:
+      - "3001:${EXPRESS_PORT:-3000}"
+    environment:
+      EXPRESS_PORT: ${EXPRESS_PORT:-3000}
+      TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
+      APP_API_KEY: ${APP_API_KEY}
+      CACHE_REQUESTS: ${CACHE_REQUESTS:-false}
+      CACHE_TTL: ${CACHE_TTL:-3600}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_DB: ${REDIS_DB:-0}
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+
+volumes:
+  redis_data:
